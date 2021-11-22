@@ -47,6 +47,10 @@ contract ZombsteinDapp is ERC721, Ownable{
         }
     }
 
+    function isInPresaleList(address presaler) external view returns (bool) {
+        return presalerList[presaler];
+    }
+
     function removeFromPresaleList(address[] calldata userEntries) external onlyOwner {
         for (uint256 i = 0; i < userEntries.length; i++) {
             address userEntry = userEntries[i];
