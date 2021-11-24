@@ -61,5 +61,17 @@ contract ZombsteinDapp is ERC721, Ownable{
         }
     }
 
+    function hashTransaction(address _sender, uint256 _qty, string memory _nonce) private pure returns (bytes32) {
+        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", keccak256(abi.encodePacked(_sender, _qty, _nonce))));
+
+        return hash;
+    }
+
+    function matchAddressSigner(bytes32 hash, bytes memory _signature) private view returns (bool) {
+        // return if the signer address is the same as the one in the contract
+        return _signerAddress == hash.recover(_signature);
+
+        // who is the signer address?
+    }
 
 }
