@@ -3,8 +3,12 @@ pragma solidity ^0.8.6;
 
 import "./contracts/ERC721.sol";
 import "./utils/Ownable.sol";
+import "./utils/ECDSA.sol";
 
 contract ZombsteinDapp is ERC721, Ownable{
+    using ECDSA for bytes32;
+    using Strings for uint256;
+
     uint256 public constant team_amount = 8;
     uint256 public constant internal_withold_amount = 80;
     uint256 public constant pre_sale_amount = 2200;
@@ -19,7 +23,7 @@ contract ZombsteinDapp is ERC721, Ownable{
 
     string private _contractURI;
     string private _tokenBaseURI = "";
-    // address private _signerAddress = 0x0000000000000000000000000000000000000000;
+    address private _signerAddress = 0x0000000000000000000000000000000000000000;
 
     uint256 public giftedAmount;
     uint256 public presaleAmountMinted;
@@ -73,5 +77,7 @@ contract ZombsteinDapp is ERC721, Ownable{
 
         // who is the signer address?
     }
+
+    
 
 }
