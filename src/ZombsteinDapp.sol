@@ -4,10 +4,14 @@ pragma solidity ^0.8.6;
 import "./contracts/ERC721.sol";
 import "./utils/Ownable.sol";
 import "./utils/ECDSA.sol";
+import "./utils/Counters.sol";
 
 contract ZombsteinDapp is ERC721, Ownable{
     using ECDSA for bytes32;
     using Strings for uint256;
+    using Counters for Counters.Counter;
+
+    Counters.Counter private _tokenSupply;
 
     uint256 public constant team_amount = 8;
     uint256 public constant internal_withold_amount = 80;
@@ -65,19 +69,44 @@ contract ZombsteinDapp is ERC721, Ownable{
         }
     }
 
-    function hashTransaction(address _sender, uint256 _qty, string memory _nonce) private pure returns (bytes32) {
-        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", keccak256(abi.encodePacked(_sender, _qty, _nonce))));
+    function hashTransaction(address sender, uint256 qty, string memory nonce) private pure returns (bytes32) {
+        bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", keccak256(abi.encodePacked(sender, qty, nonce))));
 
         return hash;
     }
 
-    function matchAddressSigner(bytes32 hash, bytes memory _signature) private view returns (bool) {
+    function matchAddressSigner(bytes32 hash, bytes memory signature) private view returns (bool) {
         // return if the signer address is the same as the one in the contract
-        return _signerAddress == hash.recover(_signature);
+        return _signerAddress == hash.recover(signature);
 
         // who is the signer address?
     }
 
-    
 
+    function mint(bytes32 hash, bytes memory signature, string memory nonce, uint256 tokenQuantity) external payable returns (bool) {
+        require(isSaleLive, "Sale is not live");
+        require(!isPresaleLive, "Only whitelisted, presale members are allowed to buy tokens right now");
+        /// @dev Signing address has to come from the frontend- does this mean that the address is forwarded from the frontend or another contract?
+        require(matchAddressSigner(hash, signature), "Direct mint is disallowed");
+        require(!_usedNonces[nonce], "Nonce already used");
+        require(hashTransaction(msg.sender, tokenQuantity, nonce) == hash, "Invalid transaction hash");
+        require(_tokenSupply.current() < max_amount, "Max amount exceeded");
+        require(publicAmountMinted + tokenQuantity <= public_sale_amount, "Public sale amount exceeded");
+        require(tokenQuantity <= mac_per_tx, "Max amount per transaction exceeded");
+        require(price * tokenQuantity <= msg.value, "Not enough ether");
+        
+
+        for (uint256 i = 0; i < tokenQuantity; i++) {
+            publicAmountMinted++;
+            _tokenSupply.increment();
+            _safeMint(msg.sender, _tokenSupply.current());
+        }
+        
+        _usedNonces[nonce] = true;
+        return true;
+    }
+
+    function numberOfTokensMinted() public view returns (uint256) {
+        return _tokenSupply.current();
+    }
 }
