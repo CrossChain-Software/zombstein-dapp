@@ -50,7 +50,6 @@ contract ZombsteinDapp is ERC721, Ownable {
             require(userEntry != address(0), "null address");
             require(!presalerList[userEntry], "duplicate entry");
             
-            // add to mapping, makes searching based on address easier
             presalerList[userEntry] = true;
         }
     }
@@ -64,22 +63,18 @@ contract ZombsteinDapp is ERC721, Ownable {
             address userEntry = userEntries[i];
             require(userEntry != address(0), "null address");
 
-            // remove from mapping, makes searching based on address easier
             presalerList[userEntry] = false;
         }
     }
 
     function hashTransaction(address sender, uint256 qty, string memory nonce) private pure returns (bytes32) {
         bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", keccak256(abi.encodePacked(sender, qty, nonce))));
-
         return hash;
     }
 
+    /// @return True if the signer address is the same as the one in the contract
     function matchAddressSigner(bytes32 hash, bytes memory signature) private view returns (bool) {
-        // return if the signer address is the same as the one in the contract
         return _signerAddress == hash.recover(signature);
-
-        // who is the signer address?
     }
 
 
