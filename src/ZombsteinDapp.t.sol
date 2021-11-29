@@ -24,10 +24,9 @@ contract ZombsteinDappTest is DSTest {
     function test_addToPresaleList() public {
         // address[] memory a = [0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9, 0x71315fbDDdE8D5bc1573C3Df2Af670A6B51ecBeD];
         
-        address[] storage a;
-        a.push(0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9);
-        a.push(0x71315fbDDdE8D5bc1573C3Df2Af670A6B51ecBeD);
-
+        address[] memory a = new address[](2);
+        a[0] = 0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9;
+        a[1] = 0x71315fbDDdE8D5bc1573C3Df2Af670A6B51ecBeD;
 
         dapp.addToPresaleList(a);
         assertTrue(dapp.isInPresaleList(a[0]));

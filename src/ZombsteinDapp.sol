@@ -92,7 +92,7 @@ contract ZombsteinDapp is ERC721, Ownable{
         require(hashTransaction(msg.sender, tokenQuantity, nonce) == hash, "Invalid transaction hash");
         require(_tokenSupply.current() < max_amount, "Max amount exceeded");
         require(publicAmountMinted + tokenQuantity <= public_sale_amount, "Public sale amount exceeded");
-        require(tokenQuantity <= mac_per_tx, "Max amount per transaction exceeded");
+        require(tokenQuantity <= max_per_tx, "Max amount per transaction exceeded");
         require(price * tokenQuantity <= msg.value, "Not enough ether");
         
 
@@ -106,7 +106,20 @@ contract ZombsteinDapp is ERC721, Ownable{
         return true;
     }
 
-    function numberOfTokensMinted() public view returns (uint256) {
+    function presaleMint(uint256 tokenQuantity) external payable {
+        require(!isPresaleLive && isSaleLive, "Presale is not live");
+        require(presalerList[msg.sender], "Only presale members are allowed to buy tokens right now");
+        require(_tokenSupply.current() < max_amount, "NFTs are sold out!");
+        require(presalerListPurchases[msg.sender] + tokenQuantity <= presalePurchaseLimit, "Max amount per transaction exceeded");
+        require(price * tokenQuantity <= msg.value, "Not enough ether sent to purchase NFTs");
+
+        for (uint256 i = 0; i < tokenQuantity; i++) {
+            presaleAmountMinted++;
+            presalerListPurchases[msg.sender]++;
+            _safeMint(msg.sender, _tokenSupply.increment());
+    }
+
+    function getNumberOfTokensMinted() public view returns (uint256) {
         return _tokenSupply.current();
     }
 }
