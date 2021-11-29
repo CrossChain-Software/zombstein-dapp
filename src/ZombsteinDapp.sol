@@ -6,7 +6,7 @@ import "./utils/Ownable.sol";
 import "./utils/ECDSA.sol";
 import "./utils/Counters.sol";
 
-contract ZombsteinDapp is ERC721, Ownable{
+contract ZombsteinDapp is ERC721, Ownable {
     using ECDSA for bytes32;
     using Strings for uint256;
     using Counters for Counters.Counter;
@@ -118,6 +118,18 @@ contract ZombsteinDapp is ERC721, Ownable{
             presalerListPurchases[msg.sender]++;
             _safeMint(msg.sender, _tokenSupply.increment());
     }
+
+
+    function gift(adress[] calldata receviers) external onlyOwner {
+        require(_totalSupply.current() + receivers.length <= max_amount, "Max amount exceeded");
+        require(giftedAmount + receivers.length <= internal_withold_amount, "No more gifts left");
+
+        for (uint256 i = 0; i < receivers.length; i++) {
+            giftedAmount++;
+            _safeMint(receivers[i], _tokenSupply.increment());
+        }
+    }
+
 
     function getNumberOfTokensMinted() public view returns (uint256) {
         return _tokenSupply.current();
