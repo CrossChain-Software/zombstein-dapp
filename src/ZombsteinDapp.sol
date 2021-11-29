@@ -130,8 +130,60 @@ contract ZombsteinDapp is ERC721, Ownable {
         }
     }
 
+    /// @notice Need to test for re-entrancy
+    function withdraw() external onlyOwner {
+        // do we need to check for the balance of the contract?
+        payable(msg.sender).transfer(address(this).balance);
+    }
+
+    function lockMetadata() external onlyOwner {
+        isLocked = true;
+    }
+
+    function togglePresaleStatus() external onlyOwner {
+        isPresaleLive = !isPresaleLive;
+    }
+
+    function toggleMainSaleStatus() external onlyOwner {
+        isSaleLive = !isSaleLive;
+    }
+
+    function setSignerAddress(address addr) external onlyOwner {
+        _signerAddress = addr;
+    }
+
+    function setProvenanceHash(string calldata hash) external onlyOwner notLocked {
+        proof = hash;
+    }
+
+    function setContractURI(string calldata uri) external onlyOwner notLocked {
+        _contractURI = uri;
+    }
+
+    function setTokenBaseURI(string calldata uri) external onlyOwner notLocked {
+        _tokenBaseURI = uri;
+    }
+
+    function isPresaler(address addr) external view returns (bool) {
+        return presalerList[addr];
+    }
+
+    //////////////////////// @dev Getters ////////////////////////
+
+    function presalePurchasedCount(address addr) external view returns (uint256) {
+        return presalerListPurchases[addr];
+    }
 
     function getNumberOfTokensMinted() public view returns (uint256) {
         return _tokenSupply.current();
+    }
+
+    function contractURI() public view returns (string) {
+        return _contractURI;
+    }
+
+    function tokenBaseURI(uint256 tokenId) public view override(ERC721) returns (string memory) {
+        require(_exists(tokenId), "Token does not exist");
+        return string(abi.encodePacked(_tokenBaseURI, tokenId.toString());
     }
 }
