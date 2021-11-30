@@ -13,13 +13,13 @@ contract ZombsteinDapp is ERC721, Ownable {
 
     Counters.Counter private _tokenSupply;
 
-    uint256 public constant team_amount = 8;
-    uint256 public constant internal_withold_amount = 80;
-    uint256 public constant pre_sale_amount = 2200;
-    uint256 public constant public_sale_amount = 6600;
-    uint256 public constant max_amount = team_amount + internal_withold_amount + pre_sale_amount + public_sale_amount;
+    uint256 public constant teamAmount = 8;
+    uint256 public constant internalWitholdLimit = 80;
+    uint256 public constant preSaleAmount = 2200;
+    uint256 public constant publicSaleAmount = 6600;
+    uint256 public constant maxAmount = teamAmount + internalWitholdLimit + preSaleAmount + publicSaleAmount;
     uint256 public constant price = 0.08 ether;
-    uint256 public constant max_per_tx = 5;
+    uint256 public constant maxPerTx = 5;
 
     mapping(address => bool) public presalerList;
     mapping(address => uint256) public presalerListPurchases;
@@ -29,6 +29,7 @@ contract ZombsteinDapp is ERC721, Ownable {
     string private _tokenBaseURI = "";
     address private _signerAddress = 0x0000000000000000000000000000000000000000;
 
+    string public proof;
     uint256 public giftedAmount;
     uint256 public presaleAmountMinted;
     uint256 public publicAmountMinted;
@@ -85,9 +86,9 @@ contract ZombsteinDapp is ERC721, Ownable {
         require(matchAddressSigner(hash, signature), "Direct mint is disallowed");
         require(!_usedNonces[nonce], "Nonce already used");
         require(hashTransaction(msg.sender, tokenQuantity, nonce) == hash, "Invalid transaction hash");
-        require(_tokenSupply.current() < max_amount, "Max amount exceeded");
-        require(publicAmountMinted + tokenQuantity <= public_sale_amount, "Public sale amount exceeded");
-        require(tokenQuantity <= max_per_tx, "Max amount per transaction exceeded");
+        require(_tokenSupply.current() < maxAmount, "Max amount exceeded");
+        require(publicAmountMinted + tokenQuantity <= publicSaleAmount, "Public sale amount exceeded");
+        require(tokenQuantity <= maxPerTx, "Max amount per transaction exceeded");
         require(price * tokenQuantity <= msg.value, "Not enough ether");
         
 
@@ -104,24 +105,29 @@ contract ZombsteinDapp is ERC721, Ownable {
     function presaleMint(uint256 tokenQuantity) external payable {
         require(!isPresaleLive && isSaleLive, "Presale is not live");
         require(presalerList[msg.sender], "Only presale members are allowed to buy tokens right now");
-        require(_tokenSupply.current() < max_amount, "NFTs are sold out!");
+        require(_tokenSupply.current() < maxAmount, "NFTs are sold out!");
         require(presalerListPurchases[msg.sender] + tokenQuantity <= presalePurchaseLimit, "Max amount per transaction exceeded");
         require(price * tokenQuantity <= msg.value, "Not enough ether sent to purchase NFTs");
 
         for (uint256 i = 0; i < tokenQuantity; i++) {
             presaleAmountMinted++;
             presalerListPurchases[msg.sender]++;
-            _safeMint(msg.sender, _tokenSupply.increment());
+            // _safeMint(msg.sender, _tokenSupply.increment());
+            _safeMint(msg.sender, _tokenSupply.current());
+        }
     }
 
 
-    function gift(adress[] calldata receviers) external onlyOwner {
-        require(_totalSupply.current() + receivers.length <= max_amount, "Max amount exceeded");
-        require(giftedAmount + receivers.length <= internal_withold_amount, "No more gifts left");
+    function gift(address[] calldata receivers) external onlyOwner {
+        // amount minted + gift receivers array of addresses <= 8888
+        // works if they are receiving one nft
+        require(_tokenSupply.current() + receivers.length <= maxAmount, "Max amount exceeded");
+        require(giftedAmount + receivers.length <= internalWitholdLimit, "No more gifts left");
 
         for (uint256 i = 0; i < receivers.length; i++) {
             giftedAmount++;
-            _safeMint(receivers[i], _tokenSupply.increment());
+            // _safeMint(receivers[i], _tokenSupply.increment());
+            _safeMint(receivers[i], _tokenSupply.current());
         }
     }
 
@@ -173,12 +179,12 @@ contract ZombsteinDapp is ERC721, Ownable {
         return _tokenSupply.current();
     }
 
-    function contractURI() public view returns (string) {
+    function contractURI() public view returns (string memory) {
         return _contractURI;
     }
 
-    function tokenBaseURI(uint256 tokenId) public view override(ERC721) returns (string memory) {
+    function tokenBaseURI(uint256 tokenId) public view returns (string memory) {
         require(_exists(tokenId), "Token does not exist");
-        return string(abi.encodePacked(_tokenBaseURI, tokenId.toString());
+        return string(abi.encodePacked(_tokenBaseURI, tokenId.toString()));
     }
 }
