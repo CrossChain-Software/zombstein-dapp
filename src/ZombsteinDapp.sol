@@ -13,6 +13,12 @@ contract ZombsteinDapp is ERC721, Ownable {
 
     Counters.Counter private _tokenSupply;
 
+
+    // instead of using all of the uint256 variables up here,
+    // we need to make a NFTMarketInitStruct which uses a set of
+    // uint256 variables
+    // use less booleans and use bits instead
+    
     uint256 public constant teamAmount = 8;
     uint256 public constant internalWitholdLimit = 80;
     uint256 public constant preSaleAmount = 2200;
@@ -34,9 +40,9 @@ contract ZombsteinDapp is ERC721, Ownable {
     uint256 public presaleAmountMinted;
     uint256 public publicAmountMinted;
     uint256 public presalePurchaseLimit = 5;
-    bool public isPresaleLive;
-    bool public isSaleLive;
-    bool public isLocked;
+    bool public isPresaleLive = false;
+    bool public isSaleLive = false;
+    bool public isLocked = true;
 
     constructor() ERC721("Zombstein", "ZOMB") {}
 
