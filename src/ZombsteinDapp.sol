@@ -18,7 +18,7 @@ contract ZombsteinDapp is ERC721, Ownable {
     // we need to make a NFTMarketInitStruct which uses a set of
     // uint256 variables
     // use less booleans and use bits instead
-    
+
     uint256 public constant teamAmount = 8;
     uint256 public constant internalWitholdLimit = 80;
     uint256 public constant preSaleAmount = 2200;
@@ -36,9 +36,9 @@ contract ZombsteinDapp is ERC721, Ownable {
     address private _signerAddress = 0x0000000000000000000000000000000000000000;
 
     string public proof;
-    uint256 public giftedAmount;
-    uint256 public presaleAmountMinted;
-    uint256 public publicAmountMinted;
+    uint256 public giftedAmount = 0;
+    uint256 public presaleAmountMinted = 0;
+    uint256 public publicAmountMinted = 0;
     uint256 public presalePurchaseLimit = 5;
     bool public isPresaleLive = false;
     bool public isSaleLive = false;
@@ -74,7 +74,7 @@ contract ZombsteinDapp is ERC721, Ownable {
         }
     }
 
-    function hashTransaction(address sender, uint256 qty, string memory nonce) private pure returns (bytes32) {
+    function hashTransaction(address sender, uint256 qty, string memory nonce) public returns (bytes32) {
         bytes32 hash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", keccak256(abi.encodePacked(sender, qty, nonce))));
         return hash;
     }
@@ -108,19 +108,24 @@ contract ZombsteinDapp is ERC721, Ownable {
         return true;
     }
 
-    function presaleMint(uint256 tokenQuantity) external payable {
+    function presaleMint(bytes32 hash, bytes memory signature, string memory nonce, uint256 tokenQuantity) external payable returns (bool) {
         require(!isPresaleLive && isSaleLive, "Presale is not live");
         require(presalerList[msg.sender], "Only presale members are allowed to buy tokens right now");
+        require(!_usedNonces[nonce], "Nonce already used");
+        require(matchAddressSigner(hash, signature), "Direct mint is disallowed");
         require(_tokenSupply.current() < maxAmount, "NFTs are sold out!");
-        require(presalerListPurchases[msg.sender] + tokenQuantity <= presalePurchaseLimit, "Max amount per transaction exceeded");
+        require(presalerListPurchases[msg.sender] + tokenQuantity <= presalePurchaseLimit, "Cannot mint more than your allocated amount");
         require(price * tokenQuantity <= msg.value, "Not enough ether sent to purchase NFTs");
 
         for (uint256 i = 0; i < tokenQuantity; i++) {
             presaleAmountMinted++;
             presalerListPurchases[msg.sender]++;
-            // _safeMint(msg.sender, _tokenSupply.increment());
+            _tokenSupply.increment();
             _safeMint(msg.sender, _tokenSupply.current());
         }
+
+        _usedNonces[nonce] = true;
+        return true;
     }
 
 
