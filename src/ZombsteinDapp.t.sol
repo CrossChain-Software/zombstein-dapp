@@ -74,8 +74,26 @@ contract ZombsteinDappTest is DSTest {
     // test setContractURI
     // test setTokenBaseURI
     // test isPresaler
+    function testIsPresaler() public {
+        // test setup code
+        address a = 0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9;
+
+        assertTrue(!isPresaler(a));
+        dapp.addToPresaleList(a);
+        assertTrue(isPresaler(a));
+    }
+
     // test presalePurchasedCount
     // test getNumberOfTokensMinted
+
+    function testNumberOfTokensMinted() public {
+        uint16 qty = 1;
+        bytes32 hash = hashTransaction(_signerAddress, qty, _nonce);
+        dapp.toggleMainSaleStatus();
+        assertTrue(dapp.mint(hash, _signerAddress, _nonce, qty));
+
+        assertEq(dapp.getNumberOfTokensMinted(), qty);
+    }
     // test contractURI
     // test tokenBaseURI
 
@@ -191,7 +209,7 @@ contract ZombsteinDappTest is DSTest {
         // test setup code
         uint32 nonce = 0xDEADBEEF;
         uint16 qty = 5;
-        uint16 maxTxnCount = 6600/5-1;
+        uint16 maxTxnCount = 6600/5;
         dapp.toggleMainSaleStatus();
         // Mint just up to the max amount of tokens 
         for(uint i = 0; i < maxTxnCount; i++) {
@@ -219,6 +237,8 @@ contract ZombsteinDappTest is DSTest {
     //     bytes32 hash = hashTransaction(_signerAddress, qty, nonce);
     //     assertTrue(!dapp.mint(hash, _signerAddress, qty, nonce));
     // }
+
+    // How to test price/value sent by message? Is that needed?
 
     /*
     test the presaleMintFunctionality
