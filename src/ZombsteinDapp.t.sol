@@ -81,22 +81,10 @@ contract ZombsteinDappTest is DSTest {
 
         assertTrue(!dapp.isPresaler(a[0]));
         dapp.addToPresaleList(a);
-        assertTrue(!dapp.isPresaler(a[0]));
+        assertTrue(dapp.isPresaler(a[0]));
     }
 
     // test presalePurchasedCount
-    // test getNumberOfTokensMinted
-
-    function testNumberOfTokensMinted() public {
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        uint16 qty = 1;
-        bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
-        dapp.toggleMainSaleStatus();
-
-        assertEq(dapp.getNumberOfTokensMinted(), 0);
-        assertTrue(dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
-        assertEq(dapp.getNumberOfTokensMinted(), qty);
-    }
     // test contractURI
     // test tokenBaseURI
 
@@ -127,114 +115,127 @@ contract ZombsteinDappTest is DSTest {
 
     function testMint() public {
         // test setup code
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        
+        bytes32 _sigPt1 = 0x993dab3dd91f5c6dc28e17439be475478f5635c92a56e17e82349d3fb2f16619;
+        bytes32 _sigPt2 = 0x6f466c0b4e0c146f285204f0dcb13e5ae67bc33f4b888ec32dfe0a063e8f3f78;
+        bytes1  _sigPt3 = 0x1b;
+
         uint16 qty = 1;
         bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
         dapp.toggleMainSaleStatus();
 
-        assertTrue(dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
+        assertTrue(dapp.mint(TXHash, bytes.concat(_sigPt1, _sigPt2, _sigPt3), _nonce, qty));
     }
 
-    function testMintNotLive() public {
-        // test setup code
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        uint16 qty = 1;
-        bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
+    // function testNumberOfTokensMinted() public {
+    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
+    //     uint16 qty = 1;
+    //     bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
+    //     dapp.toggleMainSaleStatus();
 
-        assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
-    }
+    //     assertEq(dapp.getNumberOfTokensMinted(), 0);
+    //     assertTrue(dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
+    //     assertEq(dapp.getNumberOfTokensMinted(), qty);
+    // }
 
-    function testMintDuringPresale() public {
-        // test setup code
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        uint16 qty = 1;
-        bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
-        dapp.toggleMainSaleStatus();
-        dapp.togglePresaleStatus();
+    // function testMintNotLive() public {
+    //     // test setup code
+    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
+    //     uint16 qty = 1;
+    //     bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
 
-        assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
-    }
+    //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
+    // }
 
-    function testMintFromNonSigner() public {
-        // test setup code
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        uint16 qty = 1;
-        address a = 0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9;
-        bytes32 TXHash = dapp.hashTransaction(a, qty, _nonce);
-        dapp.toggleMainSaleStatus();
+    // function testMintDuringPresale() public {
+    //     // test setup code
+    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
+    //     uint16 qty = 1;
+    //     bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
+    //     dapp.toggleMainSaleStatus();
+    //     dapp.togglePresaleStatus();
 
-        assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
-    }
+    //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
+    // }
 
-    function testMintFromUsedNonce() public {
-        // test setup code
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        uint16 qty = 1;
-        bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
-        dapp.toggleMainSaleStatus();
-        dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty);
+    // function testMintFromNonSigner() public {
+    //     // test setup code
+    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
+    //     uint16 qty = 1;
+    //     address a = 0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9;
+    //     bytes32 TXHash = dapp.hashTransaction(a, qty, _nonce);
+    //     dapp.toggleMainSaleStatus();
 
-        assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
-    }
+    //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
+    // }
 
-    function testMintFromBadHashTransactionTokenQuantity() public {
-        // test setup code
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        uint16 qty = 1;
-        bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
-        dapp.toggleMainSaleStatus();
+    // function testMintFromUsedNonce() public {
+    //     // test setup code
+    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
+    //     uint16 qty = 1;
+    //     bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
+    //     dapp.toggleMainSaleStatus();
+    //     dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty);
 
-        assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, 2));
-    }
+    //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
+    // }
 
-    function testMintFromBadHashtransaction_nonce() public {
-        // test setup code
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        uint16 qty = 1;
-        bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
-        dapp.toggleMainSaleStatus();
+    // function testMintFromBadHashTransactionTokenQuantity() public {
+    //     // test setup code
+    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
+    //     uint16 qty = 1;
+    //     bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
+    //     dapp.toggleMainSaleStatus();
 
-        assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), "BEEFDEAD", qty));
-    }
+    //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, 2));
+    // }
 
-    function testMintFromBadHashTransactionSignerAddress() public {
-        // test setup code
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        uint16 qty = 1;
-        bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
-        dapp.toggleMainSaleStatus();
+    // function testMintFromBadHashtransaction_nonce() public {
+    //     // test setup code
+    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
+    //     uint16 qty = 1;
+    //     bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
+    //     dapp.toggleMainSaleStatus();
 
-        assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), "BEEFDEAD", qty));
-    }
+    //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), "BEEFDEAD", qty));
+    // }
 
-    function testMintExceedingMaxTokensPerTransaction() public {
-        // test setup code
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        uint16 qty = 10;
-        bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
-        dapp.toggleMainSaleStatus();
+    // function testMintFromBadHashTransactionSignerAddress() public {
+    //     // test setup code
+    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
+    //     uint16 qty = 1;
+    //     bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
+    //     dapp.toggleMainSaleStatus();
 
-        assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
-    }
+    //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), "BEEFDEAD", qty));
+    // }
 
-    function testMintExceedingPublicMaxTokens() public {
-        // test setup code
-        bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-        string memory nonce = "DEADBEEF";
-        uint16 qty = 5;
-        uint16 maxTxnCount = 6600/5;
-        bytes32 TXHash = 0;
-        dapp.toggleMainSaleStatus();
-        // Mint just up to the max amount of tokens 
-        for(uint i = 0; i < maxTxnCount; i++) {
-            TXHash = dapp.hashTransaction(_signerAddress, qty, nonce);
-            dapp.mint(TXHash, bytes.concat(_signature), nonce, qty);
-            nonce = string(abi.encodePacked(nonce, "A"));
-        }
-        TXHash = dapp.hashTransaction(_signerAddress, qty, nonce);
-        assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), nonce, qty));
-    }
+    // function testMintExceedingMaxTokensPerTransaction() public {
+    //     // test setup code
+    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
+    //     uint16 qty = 10;
+    //     bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
+    //     dapp.toggleMainSaleStatus();
+
+    //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
+    // }
+
+    // function testMintExceedingPublicMaxTokens() public {
+    //     // test setup code
+    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
+    //     string memory nonce = "DEADBEEF";
+    //     uint16 qty = 5;
+    //     uint16 maxTxnCount = 6600/5;
+    //     bytes32 TXHash = 0;
+    //     dapp.toggleMainSaleStatus();
+    //     // Mint just up to the max amount of tokens 
+    //     for(uint i = 0; i < maxTxnCount; i++) {
+    //         TXHash = dapp.hashTransaction(_signerAddress, qty, nonce);
+    //         dapp.mint(TXHash, bytes.concat(_signature), nonce, qty);
+    //         nonce = string(abi.encodePacked(nonce, "A"));
+    //     }
+    //     TXHash = dapp.hashTransaction(_signerAddress, qty, nonce);
+    //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), nonce, qty));
+    // }
 
     // TODO: This needs presale to be fixed/discussed
     // function TestMintExceedingMaxTokens() public {
