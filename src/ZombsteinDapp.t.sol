@@ -8,8 +8,10 @@ import "./ZombsteinDapp.sol";
 
 contract ZombsteinDappTest is DSTest {
     ZombsteinDapp dapp;
-    address private _signerAddress = 0x0000000000000000000000000000000000000000;
-    address _nonSignerAddress = 0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9;
+    address private _signerAddress = 0x02E1a5869E4649AEd2D8b92298D01e13d4236554;
+    bytes32 r = 0x2d7e2b1526a2c8d66514cfa90f9c97b3869a71bca8c646b15e349cb9079f5fc4;
+    bytes32 s = 0x4389dcfe9581327a53578f45bd72bfbfae3748201d55becf7503a51ee4fba108;
+    bytes1  v = 0x1c;
     string private _nonce = "DEADBEEF";
 
     function setUp() public {
@@ -115,15 +117,11 @@ contract ZombsteinDappTest is DSTest {
 
     function testMint() public {
         // test setup code
-        bytes32 _sigPt1 = 0x993dab3dd91f5c6dc28e17439be475478f5635c92a56e17e82349d3fb2f16619;
-        bytes32 _sigPt2 = 0x6f466c0b4e0c146f285204f0dcb13e5ae67bc33f4b888ec32dfe0a063e8f3f78;
-        bytes1  _sigPt3 = 0x1b;
-
         uint16 qty = 1;
-        bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
+        bytes32 TXHash = 0x1cad0e3f84ff77055c3c13c7ded4e8fcd3b259956583a3be7e5dcb39ee2ab5f6;
         dapp.toggleMainSaleStatus();
 
-        assertTrue(dapp.mint(TXHash, bytes.concat(_sigPt1, _sigPt2, _sigPt3), _nonce, qty));
+        assertTrue(dapp.mint(TXHash, bytes.concat(r, s, v), _nonce, qty));
     }
 
     // function testNumberOfTokensMinted() public {

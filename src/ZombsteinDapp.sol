@@ -33,7 +33,7 @@ contract ZombsteinDapp is ERC721, Ownable {
 
     string private _contractURI;
     string private _tokenBaseURI = "";
-    address private _signerAddress = 0x0000000000000000000000000000000000000000;
+    address private _signerAddress = 0x02E1a5869E4649AEd2D8b92298D01e13d4236554;
 
     string public proof;
     uint256 public giftedAmount = 0;
@@ -80,7 +80,7 @@ contract ZombsteinDapp is ERC721, Ownable {
     }
 
     /// @return True if the signer address is the same as the one in the contract
-    function matchAddressSigner(bytes32 hash, bytes memory signature) private view returns (bool) {
+    function matchAddressSigner(bytes32 hash, bytes memory signature) public view returns (bool) {
         return _signerAddress == hash.recover(signature);
     }
 
