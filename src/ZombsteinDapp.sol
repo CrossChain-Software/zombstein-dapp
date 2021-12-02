@@ -198,4 +198,8 @@ contract ZombsteinDapp is ERC721, Ownable {
         require(_exists(tokenId), "Token does not exist");
         return string(abi.encodePacked(_tokenBaseURI, tokenId.toString()));
     }
+
+    function getTogglePresaleStatus() external view returns (bool) {
+        return isPresaleLive;
+    }
 }

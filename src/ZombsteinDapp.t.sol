@@ -120,7 +120,7 @@ contract ZombsteinDappTest is DSTest {
         uint16 qty = 1;
         bytes32 TXHash = 0x1cad0e3f84ff77055c3c13c7ded4e8fcd3b259956583a3be7e5dcb39ee2ab5f6;
         dapp.toggleMainSaleStatus();
-
+        emit log_bytes(bytes.concat(r, s, v));
         assertTrue(dapp.mint(TXHash, bytes.concat(r, s, v), _nonce, qty));
     }
 
