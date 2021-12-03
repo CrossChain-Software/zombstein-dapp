@@ -3,14 +3,15 @@ pragma solidity ^0.8.6;
 pragma experimental ABIEncoderV2;
 
 import "ds-test/test.sol";
-
+import "./utils/ECDSA.sol";
 import "./ZombsteinDapp.sol";
 
 contract ZombsteinDappTest is DSTest {
     ZombsteinDapp dapp;
+    using ECDSA for bytes32;
     address private _signerAddress = 0x02E1a5869E4649AEd2D8b92298D01e13d4236554;
-    bytes32 r = 0x2d7e2b1526a2c8d66514cfa90f9c97b3869a71bca8c646b15e349cb9079f5fc4;
-    bytes32 s = 0x4389dcfe9581327a53578f45bd72bfbfae3748201d55becf7503a51ee4fba108;
+    bytes32 r = 0xa277d18dd018c793f2ec601b2eba960acd58100d223e002af7cc152d860c7799;
+    bytes32 s = 0x0362b84a2fdf8fc9c5987d76109ae105d282c041ac44a58b8da71658fa2e36be;
     bytes1  v = 0x1c;
     string private _nonce = "DEADBEEF";
 
@@ -118,10 +119,17 @@ contract ZombsteinDappTest is DSTest {
     function testMint() public {
         // test setup code
         uint16 qty = 1;
-        bytes32 TXHash = 0x1cad0e3f84ff77055c3c13c7ded4e8fcd3b259956583a3be7e5dcb39ee2ab5f6;
+        uint8 vb = 0x1C;
+        bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
+        bytes memory sig = bytes.concat(r,s,v);
+        address returnedAddress;
+        msg.sender = _signerAddress;
+
+        emit log_address(msg.sender);
+        
         dapp.toggleMainSaleStatus();
 
-        assertTrue(dapp.mint(TXHash, bytes.concat(r, s, v), _nonce, qty));
+        assertTrue(dapp.mint(TXHash, sig, _nonce, qty));
     }
 
     // function testNumberOfTokensMinted() public {
