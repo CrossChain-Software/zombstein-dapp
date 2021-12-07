@@ -55,28 +55,19 @@ contract ZombsteinDappTest is DSTest {
         assertTrue(!dapp.isInPresaleList(a[1]));
     }
 
-    // test withdraw
-    // test lockMetadata
-    // test togglePresaleStatus
+
     function testTogglePresaleStatus() public {
         assertTrue(!dapp.isPresaleLive());
         dapp.togglePresaleStatus();
         assertTrue(dapp.isPresaleLive());
     }
 
-    // test toggleMainSaleStatus
     function testToggleMainSaleStatus() public {
         assertTrue(!dapp.isSaleLive());
         dapp.toggleMainSaleStatus();
         assertTrue(dapp.isSaleLive());
     }
 
-    // test setSignerAddress
-    // test setSignerAddress
-    // test setProvenanceHash
-    // test setContractURI
-    // test setTokenBaseURI
-    // test isPresaler
     function testIsPresaler() public {
         // test setup code
         address[] memory a = new address[](1);
@@ -86,10 +77,6 @@ contract ZombsteinDappTest is DSTest {
         dapp.addToPresaleList(a);
         assertTrue(dapp.isPresaler(a[0]));
     }
-
-    // test presalePurchasedCount
-    // test contractURI
-    // test tokenBaseURI
 
     /*
     // test hashTransaction()
@@ -117,7 +104,6 @@ contract ZombsteinDappTest is DSTest {
     */
 
     function testMint() public {
-        // test setup code
         uint16 qty = 1;
         uint8 vb = 0x1C;
         bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
@@ -259,13 +245,6 @@ contract ZombsteinDappTest is DSTest {
     //     bytes32 hash = hashTransaction(_signerAddress, qty, nonce);
     //     assertTrue(!dapp.mint(hash, _signerAddress, qty, nonce));
     // }
-
-    // How to test price/value sent by message? Is that needed?
-
-    /*
-    test the presaleMintFunctionality
-    // Why isn't the transaction hash checked?
-    */
 
     function testIsPresaleLive() public {
     }

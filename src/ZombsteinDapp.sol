@@ -135,14 +135,12 @@ contract ZombsteinDapp is ERC721, Ownable {
 
         for (uint256 i = 0; i < receivers.length; i++) {
             giftedAmount++;
-            // _safeMint(receivers[i], _tokenSupply.increment());
             _safeMint(receivers[i], _tokenSupply.current());
         }
     }
 
     /// @notice Need to test for re-entrancy
     function withdraw() external onlyOwner {
-        // do we need to check for the balance of the contract?
         payable(msg.sender).transfer(address(this).balance);
     }
 
