@@ -13,19 +13,13 @@ contract ZombsteinDapp is ERC721, Ownable {
 
     Counters.Counter private _tokenSupply;
 
-
-    // instead of using all of the uint256 variables up here,
-    // we need to make a NFTMarketInitStruct which uses a set of
-    // uint256 variables
-    // use less booleans and use bits instead
-
-    uint256 public constant teamAmount = 8;
-    uint256 public constant internalWitholdLimit = 80;
-    uint256 public constant preSaleAmount = 2200;
-    uint256 public constant publicSaleAmount = 6600;
-    uint256 public constant maxAmount = teamAmount + internalWitholdLimit + preSaleAmount + publicSaleAmount;
-    uint256 public constant price = 0.08 ether;
-    uint256 public constant maxPerTx = 5;
+    uint8 public constant teamAmount = 8;
+    uint8 public constant internalWitholdLimit = 80;
+    uint16 public constant preSaleAmount = 2200;
+    uint16 public constant publicSaleAmount = 6600;
+    uint16 public constant maxAmount = teamAmount + internalWitholdLimit + preSaleAmount + publicSaleAmount;
+    uint64 public constant price = 0.08 ether;
+    uint8 public constant maxPerTx = 5;
 
     mapping(address => bool) public presalerList;
     mapping(address => uint256) public presalerListPurchases;
@@ -86,7 +80,6 @@ contract ZombsteinDapp is ERC721, Ownable {
     function mint(bytes32 hash, bytes memory signature, string memory nonce, uint256 tokenQuantity) external payable returns (bool) {
         require(isSaleLive, "Sale is not live");
         require(!isPresaleLive, "Only whitelisted, presale members are allowed to buy tokens right now");
-        /// @dev Signing address has to come from the frontend- does this mean that the address is forwarded from the frontend or another contract?
         require(matchAddressSigner(hash, signature), "Direct mint is disallowed");
         require(!_usedNonces[nonce], "Nonce already used");
         require(hashTransaction(msg.sender, tokenQuantity, nonce) == hash, "Invalid transaction hash");
@@ -139,7 +132,6 @@ contract ZombsteinDapp is ERC721, Ownable {
         }
     }
 
-    /// @notice Need to test for re-entrancy
     function withdraw() external onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
     }
@@ -186,12 +178,16 @@ contract ZombsteinDapp is ERC721, Ownable {
         return _tokenSupply.current();
     }
 
-    function contractURI() public view returns (string memory) {
+    function getContractURI() public view returns (string memory) {
         return _contractURI;
     }
 
-    function tokenBaseURI(uint256 tokenId) public view returns (string memory) {
+    function getTokenBaseURI(uint256 tokenId) public view returns (string memory) {
         require(_exists(tokenId), "Token does not exist");
         return string(abi.encodePacked(_tokenBaseURI, tokenId.toString()));
+    }
+
+    function getIsPresaleLive() public view returns (bool) {
+        return isPresaleLive;
     }
 }

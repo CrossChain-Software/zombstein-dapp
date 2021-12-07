@@ -85,7 +85,6 @@ contract ZombsteinDappTest is DSTest {
     Make sure the signing address is correct from the frontend
         - _signerAddress
         - test that matchAddressSigner returns true if the address is the signer, false if not
-
     */
 
     /* test mint()
@@ -109,7 +108,6 @@ contract ZombsteinDappTest is DSTest {
         bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
         bytes memory sig = bytes.concat(r,s,v);
         address returnedAddress;
-        msg.sender = _signerAddress;
 
         emit log_address(msg.sender);
         
@@ -247,6 +245,7 @@ contract ZombsteinDappTest is DSTest {
     // }
 
     function testIsPresaleLive() public {
+        assertTrue(dapp.getIsPresaleLive());
     }
 
     function testIsPresaleLiveNonMember() public {
