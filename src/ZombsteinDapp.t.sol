@@ -69,7 +69,6 @@ contract ZombsteinDappTest is DSTest {
     }
 
     function testIsPresaler() public {
-        // test setup code
         address[] memory a = new address[](1);
         a[0] = 0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9;
 
@@ -86,6 +85,9 @@ contract ZombsteinDappTest is DSTest {
         - _signerAddress
         - test that matchAddressSigner returns true if the address is the signer, false if not
     */
+    function testMatchAddressSigner() public {
+        assertTrue();
+    }
 
     /* test mint()
     Make sure a txn is hashed correctly

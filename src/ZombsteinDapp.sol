@@ -88,8 +88,7 @@ contract ZombsteinDapp is ERC721, Ownable {
         require(tokenQuantity <= maxPerTx, "Max amount per transaction exceeded");
         require(price * tokenQuantity <= msg.value, "Not enough ether");
         
-
-        for (uint256 i = 0; i < tokenQuantity; i++) {
+        for (uint16 i = 0; i < tokenQuantity; i++) {
             publicAmountMinted++;
             _tokenSupply.increment();
             _safeMint(msg.sender, _tokenSupply.current());
@@ -99,6 +98,10 @@ contract ZombsteinDapp is ERC721, Ownable {
         return true;
     }
 
+    /// @dev Mints a token for a presale member
+    /// @param hash keccak256 hash contains the ABI encoded user address, quantity to mint, and nonce which is a randomly generated string with a length of 8
+    /// @param signature Signature from the frontend that contains the user's address and the nonce- what are the parameters of the signature from the frontend?
+    /// @param nonce Of the user
     function presaleMint(bytes32 hash, bytes memory signature, string memory nonce, uint256 tokenQuantity) external payable returns (bool) {
         require(!isPresaleLive && isSaleLive, "Presale is not live");
         require(presalerList[msg.sender], "Only presale members are allowed to buy tokens right now");
@@ -108,7 +111,7 @@ contract ZombsteinDapp is ERC721, Ownable {
         require(presalerListPurchases[msg.sender] + tokenQuantity <= presalePurchaseLimit, "Cannot mint more than your allocated amount");
         require(price * tokenQuantity <= msg.value, "Not enough ether sent to purchase NFTs");
 
-        for (uint256 i = 0; i < tokenQuantity; i++) {
+        for (uint16 i = 0; i < tokenQuantity; i++) {
             presaleAmountMinted++;
             presalerListPurchases[msg.sender]++;
             _tokenSupply.increment();
@@ -119,16 +122,28 @@ contract ZombsteinDapp is ERC721, Ownable {
         return true;
     }
 
+    /// @dev Need to compile list of gift receiver addresses before calling this function
+    /// @param giftReceivers Array of addresses to receive the gift
+    function gift(address[] calldata giftReceivers) external onlyOwner {
+        require(_tokenSupply.current() + giftReceivers.length <= maxAmount, "Max amount exceeded");
+        require(giftedAmount + giftReceivers.length <= internalWitholdLimit, "No more gifts left");
 
-    function gift(address[] calldata receivers) external onlyOwner {
-        // amount minted + gift receivers array of addresses <= 8888
-        // works if they are receiving one nft
-        require(_tokenSupply.current() + receivers.length <= maxAmount, "Max amount exceeded");
-        require(giftedAmount + receivers.length <= internalWitholdLimit, "No more gifts left");
-
-        for (uint256 i = 0; i < receivers.length; i++) {
+        for (uint16 i = 0; i < giftReceivers.length; i++) {
             giftedAmount++;
-            _safeMint(receivers[i], _tokenSupply.current());
+            _safeMint(giftReceivers[i], _tokenSupply.current());
+        }
+    }
+
+    /// @dev Gift multiple NFTs to an address
+    /// @param giftReceiver Address to receive the gift
+    /// @param number Number of NFTs to gift the individual
+    function giftMultipleNFTs(address giftReceiver, uint8 number) external onlyOwner {
+        require(_tokenSupply.current() + number <= maxAmount, "Max amount exceeded");
+        require(giftedAmount + number <= internalWitholdLimit, "No more gifts left");
+
+        for (uint8 i = 0; i < number; i++) {
+            giftedAmount++;
+            _safeMint(giftReceiver, _tokenSupply.current());
         }
     }
 
