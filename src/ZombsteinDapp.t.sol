@@ -27,7 +27,7 @@ contract ZombsteinDappTest is DSTest {
         assertTrue(true);
     }
 
-    function test_addToPresaleList() public {
+    function testAddToPresaleList() public {
         address[] memory a = new address[](2);
         a[0] = 0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9;
         a[1] = 0x71315fbDDdE8D5bc1573C3Df2Af670A6B51ecBeD;
@@ -37,13 +37,13 @@ contract ZombsteinDappTest is DSTest {
         assertTrue(dapp.isInPresaleList(a[1]));
     }
 
-    function test_notAddedToPresaleList() public {
+    function testNotAddedToPresaleList() public {
         address[] memory a = new address[](2);
         a[0] = 0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9;
         assertTrue(!(dapp.isInPresaleList(a[0])));
     }
 
-    function test_removeFromPresaleList() public {
+    function testRemoveFromPresaleList() public {
         address[] memory a = new address[](2);
         a[0] = 0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9;
         a[1] = 0x71315fbDDdE8D5bc1573C3Df2Af670A6B51ecBeD;
@@ -54,7 +54,6 @@ contract ZombsteinDappTest is DSTest {
         assertTrue(!dapp.isInPresaleList(a[0]));
         assertTrue(!dapp.isInPresaleList(a[1]));
     }
-
 
     function testTogglePresaleStatus() public {
         assertTrue(!dapp.isPresaleLive());
@@ -77,33 +76,6 @@ contract ZombsteinDappTest is DSTest {
         assertTrue(dapp.isPresaler(a[0]));
     }
 
-    /*
-    // test hashTransaction()
-
-    // test matchAddressSigner()  
-    Make sure the signing address is correct from the frontend
-        - _signerAddress
-        - test that matchAddressSigner returns true if the address is the signer, false if not
-    */
-    function testMatchAddressSigner() public {
-        assertTrue();
-    }
-
-    /* test mint()
-    Make sure a txn is hashed correctly
-    Test minting against different variables:
-        - isSaleLive
-        - isPresaleLive
-        - make sure that direct minting is not allowed (requires presale testing)
-        - Test the hash transaction is correct
-        - Test token supply doesn't exceed max
-        - test public amount minted + tokenQuantity <= publicSaleAmount
-        - test max tokens per transaction
-        - test that the right, too much, or too little ether was added
-        - test that the before/after token supplies are correct
-        - test the gas usage for optimization
-    */
-
     function testMint() public {
         uint16 qty = 1;
         uint8 vb = 0x1C;
@@ -117,18 +89,7 @@ contract ZombsteinDappTest is DSTest {
 
         assertTrue(dapp.mint(TXHash, sig, _nonce, qty));
     }
-
-    // function testNumberOfTokensMinted() public {
-    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-    //     uint16 qty = 1;
-    //     bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
-    //     dapp.toggleMainSaleStatus();
-
-    //     assertEq(dapp.getNumberOfTokensMinted(), 0);
-    //     assertTrue(dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
-    //     assertEq(dapp.getNumberOfTokensMinted(), qty);
-    // }
-
+    
     // function testMintNotLive() public {
     //     // test setup code
     //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
@@ -169,16 +130,6 @@ contract ZombsteinDappTest is DSTest {
     //     dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty);
 
     //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, qty));
-    // }
-
-    // function testMintFromBadHashTransactionTokenQuantity() public {
-    //     // test setup code
-    //     bytes32 _signature = 0xcf36ac4f97dc10d91fc2cbb20d718e94a8cbfe0f82eaedc6a4aa38946fb797cd;
-    //     uint16 qty = 1;
-    //     bytes32 TXHash = dapp.hashTransaction(_signerAddress, qty, _nonce);
-    //     dapp.toggleMainSaleStatus();
-
-    //     assertTrue(!dapp.mint(TXHash, bytes.concat(_signature), _nonce, 2));
     // }
 
     // function testMintFromBadHashtransaction_nonce() public {
@@ -247,17 +198,18 @@ contract ZombsteinDappTest is DSTest {
     // }
 
     function testIsPresaleLive() public {
-        assertTrue(dapp.getIsPresaleLive());
+        assertTrue(!dapp.getIsPresaleLive());
     }
 
-    function testIsPresaleLiveNonMember() public {
+    function testGift() public {
+        address[] memory a = new address[](2);
+        a[0] = 0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9;
+        a[1] = 0x71315fbDDdE8D5bc1573C3Df2Af670A6B51ecBeD;
+
+        dapp.gift(a);
+        // why cant i get the current tokenSupply()?
+        uint tokensMinted = dapp.getNumberOfTokensMinted();
+        emit log_uint(tokensMinted);
+        assertEq(dapp.getNumberOfTokensMinted(), 2);
     }
-
-    /* test gift()
-        - make sure gifts don't exceed max supply
-            - is there a max amount of gifts?
-        - make sure token balances are equal after gifting
-            - gifted + _tokenSupply.current() <= maxAmount
-    */
-
 }
