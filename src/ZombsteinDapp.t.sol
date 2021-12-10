@@ -83,10 +83,9 @@ contract ZombsteinDappTest is DSTest {
         bytes memory sig = bytes.concat(r,s,v);
         address returnedAddress;
 
-        emit log_address(msg.sender);
+        // emit log_address(msg.sender);
         
         dapp.toggleMainSaleStatus();
-
         assertTrue(dapp.mint(TXHash, sig, _nonce, qty));
     }
     
@@ -208,8 +207,26 @@ contract ZombsteinDappTest is DSTest {
 
         dapp.gift(a);
         // why cant i get the current tokenSupply()?
-        uint tokensMinted = dapp.getNumberOfTokensMinted();
+        uint tokensMinted = dapp.getGiftedAmount();
+        
         emit log_uint(tokensMinted);
-        assertEq(dapp.getNumberOfTokensMinted(), 2);
+        assertEq(dapp.getGiftedAmount(), 2);
+    }
+
+    function testGiftMultipleNFTs() public {
+        uint tokensMinted = dapp.getGiftedAmount();
+        
+        emit log_uint(tokensMinted);
+        dapp.giftMultipleNFTs(0xf237Cd00e2E32eDCCe79185639ad1FC9EA9A4aA9, 2);
+        assertEq(dapp.getGiftedAmount(), 2);
+    }
+
+    function testTokenSupply() public {
+        dapp.increaseTokenSupply();
+        assertEq(dapp.getTokenSupply(), 1);
+        dapp.increaseTokenSupply();
+        
+        emit log_uint(dapp.getTokenSupply());
+        assertEq(dapp.getTokenSupply(), 2);
     }
 }
